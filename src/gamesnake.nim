@@ -4,8 +4,7 @@ type
   Snake* = object
     body*: Deque[Tile]
     nextTailPosition*: Tile
-
-type
+    direction*: Direction 
   Direction* = enum
     Up, Down, Left, Right
      
@@ -31,3 +30,4 @@ proc move*(this: var Snake, direction: Direction) =
   let nextTile = this.getNextTile(direction)
   this.body.addFirst(nextTile)
   this.nextTailPosition = this.body.popLast()
+  this.direction = direction

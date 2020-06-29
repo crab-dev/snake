@@ -8,7 +8,7 @@ var
   grid = newGrid(20, 20)
   snake: Snake
   cherry: Tile
-  direction = Right
+  anticipatedDirection = Right
   timeElapsedSinceUpdate = 0.0
   score = 0
   isRunning = false
@@ -23,6 +23,8 @@ proc reset() =
   isRunning = true
   cherry = getRandomLocation()
   snake = newSnake(@[(3, 6), (3, 7), (2, 7), (2, 8)])
+  anticipatedDirection = Right
+  snake.direction = anticipatedDirection
   isRunning = true
   score = 0
 
@@ -44,13 +46,13 @@ proc stop() =
   isRunning = false
 
 proc update() =
-  let nextTile = snake.getNextTile(direction)
+  let nextTile = snake.getNextTile(anticipatedDirection)
   if nextTile.col < 0 or nextTile.row < 0 or nextTile.col == grid.numCols or nextTile.row == grid.numRows or
     snake.body.contains(nextTile) and nextTile != snake.body.peekLast():
     stop()
     return
 
-  snake.move(direction)
+  snake.move(anticipatedDirection)
 
   if nextTile == cherry:
     cherry = getRandomLocation()
@@ -76,14 +78,14 @@ proc gameUpdate(dt: float32) =
       isRunning = true
     return
 
-  if up() and direction != Down:
-    direction = Up
-  elif down() and direction != Up:
-    direction = Down
-  elif left() and direction != Right:
-    direction = Left
-  elif right() and direction != Left:
-    direction = Right
+  if up() and snake.direction != Down:
+    anticipatedDirection = Up
+  elif down() and snake.direction != Up:
+    anticipatedDirection = Down
+  elif left() and snake.direction != Right:
+    anticipatedDirection = Left
+  elif right() and snake.direction != Left:
+    anticipatedDirection = Right
 
   timeElapsedSinceUpdate += dt
   if timeElapsedSinceUpdate >= updateInterval:
