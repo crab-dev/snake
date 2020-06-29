@@ -57,6 +57,18 @@ proc update() =
     snake.body.addLast(snake.nextTailPosition)
     inc score
 
+proc up(): bool =
+  return key(K_UP) or key(K_w)
+
+proc down(): bool =
+  return key(K_DOWN) or key(K_s)
+
+proc left(): bool =
+  return key(K_LEFT) or key(K_a)
+
+proc right(): bool =
+  return key(K_RIGHT) or key(K_d)
+
 proc gameUpdate(dt: float32) =
   if not isRunning:
     if key(K_SPACE):
@@ -64,13 +76,13 @@ proc gameUpdate(dt: float32) =
       isRunning = true
     return
 
-  if key(K_UP) and direction != Down:
+  if up() and direction != Down:
     direction = Up
-  elif key(K_DOWN) and direction != Up:
+  elif down() and direction != Up:
     direction = Down
-  elif key(K_LEFT) and direction != Right:
+  elif left() and direction != Right:
     direction = Left
-  elif key(K_RIGHT) and direction != Left:
+  elif right() and direction != Left:
     direction = Right
 
   timeElapsedSinceUpdate += dt
@@ -92,5 +104,5 @@ proc gameDraw() =
     printc("Press Space to Play Again", grid.numCols / 2 * tileSize, grid.numRows / 2 * tileSize + tileSize / 2)
 
 nico.init("myOrg", "myApp")
-nico.createWindow("myApp", grid.numCols * tileSize, grid.numRows * tileSize, 1, false)
+nico.createWindow("myApp", grid.numCols * tileSize, grid.numRows * tileSize, 4, false)
 nico.run(gameInit, gameUpdate, gameDraw)
