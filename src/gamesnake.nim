@@ -3,6 +3,7 @@ import deques, gamegrid
 type 
   Snake* = object
     body*: Deque[Tile]
+    nextTailPosition*: Tile
 
 type
   Direction* = enum
@@ -12,17 +13,21 @@ proc newSnake*(body: seq[Tile]): Snake =
   result.body = initDeque[Tile]()
   for tile in body:
     result.body.addLast(tile)
+  result.nextTailPosition = result.body.peekLast
 
-proc move*(this: var Snake, direction: Direction) = 
-  var nextTile: Tile = this.body.peekFirst
+proc getNextTile*(this: Snake, direction: Direction): Tile =
+  result = this.body.peekFirst
   case direction
   of Up:
-    nextTile.row -= 1
+    result.row -= 1
   of Down:
-    nextTile.row += 1
+    result.row += 1
   of Left:
-    nextTile.col -= 1
+    result.col -= 1
   of Right:
-    nextTile.col += 1
+    result.col += 1
+
+proc move*(this: var Snake, direction: Direction) = 
+  let nextTile = this.getNextTile(direction)
   this.body.addFirst(nextTile)
-  this.body.popLast()
+  this.nextTailPosition = this.body.popLast()
