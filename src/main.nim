@@ -1,4 +1,4 @@
-import nico, random, gamegrid, gamesnake, deques
+import nico, random, gamegrid, gamesnake, audioplayer, deques
 
 const
   tileSize = 8
@@ -20,6 +20,8 @@ proc getRandomLocation(): Tile =
   )
 
 proc reset() =
+  # 1 loops the track
+  playMusicTrack()
   isRunning = true
   cherry = getRandomLocation()
   snake = newSnake(@[(3, 6), (3, 7), (2, 7), (2, 8)])
@@ -30,6 +32,7 @@ proc reset() =
 
 proc gameInit() =
   loadFont(0, "font.png")
+  loadAudioFiles()
   reset()
   
 proc drawSnake() =
@@ -42,14 +45,21 @@ proc drawCherry() =
     y = cherry.row * tileSize + tileSize / 2 
   circfill(x, y, tileSize / 4)
 
-proc stop() =
+proc stopGame() =
+  playSound()
+  stopMusicTrack()
   isRunning = false
+
+proc canMoveTo(nextTile: Tile): bool =
+  return
+    nextTile.col >= 0 and nextTile.row >= 0 and
+    nextTile.col < grid.numCols and nextTile.row < grid.numRows and
+    (not snake.body.contains(nextTile) or nextTile == snake.body.peekLast())
 
 proc update() =
   let nextTile = snake.getNextTile(anticipatedDirection)
-  if nextTile.col < 0 or nextTile.row < 0 or nextTile.col == grid.numCols or nextTile.row == grid.numRows or
-    snake.body.contains(nextTile) and nextTile != snake.body.peekLast():
-    stop()
+  if not canMoveTo(nextTile):
+    stopGame()
     return
 
   snake.move(anticipatedDirection)
@@ -60,16 +70,16 @@ proc update() =
     inc score
 
 proc up(): bool =
-  return key(K_UP) or key(K_w)
+  return btnp(pcUp) or key(K_w)
 
 proc down(): bool =
-  return key(K_DOWN) or key(K_s)
+  return btnp(pcDown) or key(K_s)
 
 proc left(): bool =
-  return key(K_LEFT) or key(K_a)
+  return btnp(pcLeft) or key(K_a)
 
 proc right(): bool =
-  return key(K_RIGHT) or key(K_d)
+  return btnp(pcRight) or key(K_d)
 
 proc gameUpdate(dt: float32) =
   if not isRunning:
