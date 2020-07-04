@@ -23,7 +23,10 @@ proc reset() =
   # 1 loops the track
   playMusicTrack()
   isRunning = true
-  cherry = getRandomLocation()
+  var newLocation = getRandomLocation()
+  while cherry == newLocation:
+    newLocation = getRandomLocation()
+  cherry = newLocation
   snake = newSnake(@[(3, 6), (3, 7), (2, 7), (2, 8)])
   anticipatedDirection = Right
   snake.direction = anticipatedDirection
