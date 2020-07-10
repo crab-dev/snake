@@ -2,7 +2,7 @@ import nico, random, gamegrid, gamesnake, audioplayer, deques
 
 const
   tileSize = 8
-  updateInterval = 0.2
+  updateInterval = 0.15
 
 var 
   grid = newGrid(20, 20)
@@ -12,6 +12,7 @@ var
   timeElapsedSinceUpdate = 0.0
   score = 0
   isRunning = false
+  firstRun = true
   
 proc getRandomLocation(): Tile =
   return (
@@ -36,7 +37,6 @@ proc reset() =
 proc gameInit() =
   loadFont(0, "font.png")
   loadAudioFiles()
-  reset()
   
 proc drawSnake() =
   for b in snake.body:
@@ -89,6 +89,7 @@ proc gameUpdate(dt: float32) =
     if key(K_SPACE):
       reset()
       isRunning = true
+      firstRun = false
     return
 
   if up() and snake.direction != Down:
@@ -115,8 +116,11 @@ proc gameDraw() =
   drawCherry()
   print($score, tileSize / 2, tileSize / 2)
   if not isRunning:
-    printc("Game Over!", grid.numCols / 2 * tileSize, grid.numRows / 2 * tileSize - tileSize / 2)
-    printc("Press Space to Play Again", grid.numCols / 2 * tileSize, grid.numRows / 2 * tileSize + tileSize / 2)
+    if firstRun:
+      printc("Press Space to Start", grid.numCols / 2 * tileSize, grid.numRows / 2 * tileSize + tileSize / 2)
+    else:
+      printc("Game Over!", grid.numCols / 2 * tileSize, grid.numRows / 2 * tileSize - tileSize / 2)
+      printc("Press Space to Play Again", grid.numCols / 2 * tileSize, grid.numRows / 2 * tileSize + tileSize / 2)
 
 nico.init("myOrg", "myApp")
 nico.createWindow("myApp", grid.numCols * tileSize, grid.numRows * tileSize, 4, false)
